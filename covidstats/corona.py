@@ -68,6 +68,7 @@ print(f'Total Cases: {total_cases_latest}')
 print(f'Total Deaths: {total_deaths_latest}')
 
 plt.plot(record_date, total_cases, '-o')
+plt.yticks(total_cases)
 plt.title(country)
 plt.xlabel('Date')
 plt.ylabel('Cases')

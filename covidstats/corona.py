@@ -60,14 +60,10 @@ response = requests.request("GET", url2, headers=headers, params=querystring).js
 
 data_latest = response['latest_stat_by_country']
 new_cases = data_latest[0]['new_cases']
-total_cases_latest = data_latest[0]['total_cases']
-total_deaths_latest = data_latest[0]['total_deaths']
+total_cases_latest = int(data_latest[0]['total_cases'].replace(',',''))
+total_deaths_latest = int(data_latest[0]['total_deaths'].replace(',',''))
 new_deaths = data_latest[0]['new_deaths']
-
-print(f'New Cases: {new_cases}')
-print(f'New Deaths: {new_deaths}')
-print(f'Total Cases: {total_cases_latest}')
-print(f'Total Deaths: {total_deaths_latest}')
+mortality_ratio = (total_deaths_latest/total_cases_latest) * 100
 
 fig, (ax1, ax2) = plt.subplots(2, figsize=(10, 8))
 fig.suptitle(country)
@@ -82,4 +78,41 @@ ax2.set_yticks(total_cases)
 ax2.set_xlabel('Date')
 ax2.set_ylabel('Cases')
 
-plt.show()
+url3 = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/worldstat.php"
+response = requests.request("GET", url3, headers=headers, params=querystring).json()
+total_cases_global = response['total_cases']
+total_deaths_global = response['total_deaths']
+mortality_ratio_global = (int(total_deaths_global.replace(',',''))/int(total_cases_global.replace(',',''))) * 100
+
+print(f'The selected country is {country}. If you want to change country, visit settings.py')
+while True:
+    
+    cmd = input("> ")
+    # print(cmd)
+
+    if cmd == 'cases':
+        print(f'New Cases: {new_cases}')
+        print((f'Total Cases: {total_cases_latest}'))
+    
+    elif cmd == 'deaths':
+        print(f'New Deaths: {new_deaths}')
+        print(f'Total Deaths: {total_deaths_latest}')
+    
+    elif cmd == 'mortality':
+        print(f'Mortality Ratio: {mortality_ratio}')
+
+    elif cmd == 'global':
+        print(f'Global Total Cases: {total_cases_global}')
+        print(f'Global Total Deaths: {total_deaths_global}')
+        print(f'Global Mortality Ratio: {mortality_ratio_global}')
+    
+    elif cmd == 'plot':
+        plt.show()
+
+    elif cmd == 'exit':
+        exit(0)
+
+    else:
+        print('Command not found')
+        
+        

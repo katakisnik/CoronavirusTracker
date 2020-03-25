@@ -62,14 +62,24 @@ data_latest = response['latest_stat_by_country']
 new_cases = data_latest[0]['new_cases']
 total_cases_latest = data_latest[0]['total_cases']
 total_deaths_latest = data_latest[0]['total_deaths']
+new_deaths = data_latest[0]['new_deaths']
 
 print(f'New Cases: {new_cases}')
+print(f'New Deaths: {new_deaths}')
 print(f'Total Cases: {total_cases_latest}')
 print(f'Total Deaths: {total_deaths_latest}')
 
-plt.plot(record_date, total_cases, '-o')
-plt.yticks(total_cases)
-plt.title(country)
-plt.xlabel('Date')
-plt.ylabel('Cases')
+fig, (ax1, ax2) = plt.subplots(2, figsize=(10, 8))
+fig.suptitle(country)
+yticks = np.arange(0,100001,10000)
+ax1.plot(record_date, total_cases, '-o')
+ax1.set_yticks(yticks)
+ax1.set_xlabel('Date')
+ax1.set_ylabel('Cases')
+
+ax2.plot(record_date, total_cases, '-o')
+ax2.set_yticks(total_cases)
+ax2.set_xlabel('Date')
+ax2.set_ylabel('Cases')
+
 plt.show()

@@ -3,10 +3,15 @@ import json
 import numpy as np
 # import plotly.express as px
 import matplotlib.pyplot as plt
-import settings
 
+print('Select Country:')
+#the user gives the country he wants to check
+cmd = input("> ")
+country = cmd
+
+#get historical data from said country to create plots
 url = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/cases_by_particular_country.php"
-country = settings.COUNTRY
+# country = settings.COUNTRY
 querystring = {"country":country}
 
 headers = {
@@ -55,6 +60,7 @@ total_cases = np.array(total_cases)
 record_date = np.array(record_date)
 total_deaths = np.array(total_deaths)
 
+#get the latest stats from selected country
 url2 = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/latest_stat_by_country.php"
 response = requests.request("GET", url2, headers=headers, params=querystring).json()
 
@@ -65,26 +71,39 @@ total_deaths_latest = int(data_latest[0]['total_deaths'].replace(',',''))
 new_deaths = data_latest[0]['new_deaths']
 mortality_ratio = (total_deaths_latest/total_cases_latest) * 100
 
+#create plots
 fig, (ax1, ax2) = plt.subplots(2, figsize=(10, 8))
 fig.suptitle(country)
-yticks = np.arange(0,100001,10000)
+if total_cases_latest > 50000:
+    yticks = np.arange(0,100001,10000)
+else:
+    yticks = np.arange(0,50001,10000)
 ax1.plot(record_date, total_cases, '-o')
 ax1.set_yticks(yticks)
 ax1.set_xlabel('Date')
 ax1.set_ylabel('Cases')
+ax1.tick_params(labelsize=8)
 
-ax2.plot(record_date, total_cases, '-o')
-ax2.set_yticks(total_cases)
+if total_deaths_latest > 5000:
+    yticks2 = np.arange(0,10001,1000)
+else:
+    yticks2 = np.arange(0,5001,1000)
+ax2.plot(record_date, total_deaths, '-o')
+ax2.set_yticks(yticks2)
 ax2.set_xlabel('Date')
-ax2.set_ylabel('Cases')
+ax2.set_ylabel('Deaths')
+ax2.tick_params(labelsize=8)
 
+
+#get global data
 url3 = "https://coronavirus-monitor.p.rapidapi.com/coronavirus/worldstat.php"
 response = requests.request("GET", url3, headers=headers, params=querystring).json()
 total_cases_global = response['total_cases']
 total_deaths_global = response['total_deaths']
 mortality_ratio_global = (int(total_deaths_global.replace(',',''))/int(total_cases_global.replace(',',''))) * 100
 
-print(f'The selected country is {country}. If you want to change country, visit settings.py')
+#client usage
+print(f'The selected country is {country}.')
 while True:
     
     cmd = input("> ")
@@ -115,4 +134,4 @@ while True:
     else:
         print('Command not found')
         
-        
+         
